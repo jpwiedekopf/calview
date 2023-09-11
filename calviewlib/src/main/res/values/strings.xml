@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="calendar_access_required_rationale">We can\'t read your calendar if permission for reading the calendar isn\'t granted ;)</string>
+    <string name="calendar_access_required">Please grant permission to read the system calendar.</string>
+    <string name="request_permissions">Request permissions</string>
+</resources>

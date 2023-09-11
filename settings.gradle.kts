@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "CalView"
 include(":mobile")
 include(":wear")
+include(":calviewlib")
