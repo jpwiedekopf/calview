@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "net.wiedekopf.calview"
+    namespace = "net.wiedekopf.calview.wear"
     compileSdk = 34
 
     defaultConfig {
