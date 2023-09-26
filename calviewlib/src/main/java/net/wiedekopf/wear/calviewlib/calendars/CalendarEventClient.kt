@@ -12,6 +12,7 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 private const val TAG = "CalendarEventClient"
+
 class CalendarEventClient(private val calendarClient: CalendarClient) {
 
     fun getCalendarItems(): List<EventItem> {
@@ -19,12 +20,16 @@ class CalendarEventClient(private val calendarClient: CalendarClient) {
         // we only look forward (well, we don't really look back)
         val oneMonthAgoMillis =
             Instant.now().atOffset(ZoneOffset.UTC).minusDays(2L).also {
-                Log.d(TAG, "querying events starting at ${it.format(DateTimeFormatter.ISO_DATE_TIME)}")
+                Log.d(
+                    TAG,
+                    "querying events starting at ${it.format(DateTimeFormatter.ISO_DATE_TIME)}"
+                )
             }.toInstant().toEpochMilli()
         return calendarClient.contentResolver.query(
             contentUri,
             EVENT_PROJECTION,
-            "${CalendarContract.Events.DTSTART} >= ?",
+            "${CalendarContract.Events.DTSTART} >= ? " +
+                    "AND ${CalendarContract.Events.STATUS} <> ${CalendarContract.Events.STATUS_CANCELED}",
             arrayOf(oneMonthAgoMillis.toString()),
             null
         )?.use { cursor ->
@@ -65,7 +70,7 @@ class CalendarEventClient(private val calendarClient: CalendarClient) {
             }
             val now = Instant.now()
             // TODO still relevant?
-            val sorted = resultItems.sortedBy {
+            return resultItems.sortedBy {
                 it.dtStart
 //            }.filter {
 //                if (now >= it.dtStart) {
@@ -74,7 +79,6 @@ class CalendarEventClient(private val calendarClient: CalendarClient) {
 //                    return@filter true
 //                }
             }
-            return sorted
         } ?: emptyList()
     }
 

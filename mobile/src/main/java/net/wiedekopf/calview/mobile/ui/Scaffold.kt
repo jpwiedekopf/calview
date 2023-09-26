@@ -3,6 +3,7 @@ package net.wiedekopf.calview.mobile.ui
 import android.Manifest
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -108,11 +109,10 @@ fun CalendarItemList(calendarClient: CalendarClient) {
     })
     Box(Modifier.pullRefresh(pullRefreshState)) {
         LazyColumn(
-            state = lazyListState
+            state = lazyListState,
+            modifier = Modifier.padding(horizontal = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            item {
-
-            }
             items(events, { it.id }) { calItem ->
                 CalendarEventCard(calItem)
             }
@@ -137,10 +137,13 @@ fun CalendarEventCard(calItem: EventItem) {
     OutlinedCard(
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 2.dp, horizontal = 4.dp),
         border = BorderStroke(4.dp, cardBorderColor),
         colors = CardDefaults.outlinedCardColors(
-            containerColor = colorScheme.surfaceVariant
+            containerColor = when (calItem.availability) {
+                sharedR.string.busy -> colorScheme.surfaceVariant
+                else -> colorScheme.surface
+            }
         )
     ) {
         Column(
@@ -155,8 +158,8 @@ fun CalendarEventCard(calItem: EventItem) {
                     null, true -> null
                     else -> "@ ${calItem.eventLocation}"
                 } to typography.bodyMedium,
-//                stringResource(id = calItem.status) to null,
-//                stringResource(id = calItem.availability) to null,
+                stringResource(id = calItem.status) to null,
+                stringResource(id = calItem.availability) to null,
                 calItem.dtStart.atZone(ZoneId.systemDefault())
                     .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) to null,
                 calItem.dtEnd.atZone(ZoneId.systemDefault())
@@ -170,8 +173,12 @@ fun CalendarEventCard(calItem: EventItem) {
                 } to null
             ).map { (text, chosenTextStyle) ->
                 val textStyle = chosenTextStyle ?: typography.bodySmall
+                val textColor = when (calItem.availability) {
+                    sharedR.string.busy -> colorScheme.onSurfaceVariant
+                    else -> colorScheme.onSurface
+                }
                 if (text != null) {
-                    Text(text = text, style = textStyle, color = colorScheme.onSurfaceVariant)
+                    Text(text = text, style = textStyle, color = textColor)
                 }
             }
         }
